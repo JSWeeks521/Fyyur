@@ -97,6 +97,7 @@ class VenueForm(Form):
             ('Blues', 'Blues'),
             ('Classical', 'Classical'),
             ('Country', 'Country'),
+            ('Disco', 'Disco'),
             ('Electronic', 'Electronic'),
             ('Folk', 'Folk'),
             ('Funk', 'Funk'),
