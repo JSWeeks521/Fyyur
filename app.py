@@ -13,7 +13,7 @@ from forms import *
 from models import *
 
 # ----------------------------------------------------------------------------#
-# Models - Goto Models.py
+# Models - Goto models.py
 # ----------------------------------------------------------------------------#
 
 # ----------------------------------------------------------------------------#
@@ -49,18 +49,11 @@ def index():
 @app.route('/venues')
 def venues():
     data = []
-
-    # get all venues
     venues = Venue.query.all()
-
-    # Use set so there are no duplicate venues
     locations = set()
-
     for venue in venues:
-        # add city/state tuples
         locations.add((venue.city, venue.state))
 
-    # for each unique city/state, add venues
     for location in locations:
         data.append({
             "city": location[0],
@@ -70,10 +63,7 @@ def venues():
 
     for venue in venues:
         num_upcoming_shows = 0
-
         shows = Show.query.filter_by(venue_id=venue.id).all()
-
-        # get current date to filter num_upcoming_shows
         current_date = datetime.now()
 
         for show in shows:
@@ -104,7 +94,6 @@ def search_venues():
 
 @app.route('/venues/<venue_id>')
 def show_venue(venue_id):
-    # shows the venue page with the given venue_id
     venue = Venue.query.get(venue_id)
     shows = Show.query.filter_by(venue_id=venue_id).all()
     past_shows = []
@@ -158,25 +147,20 @@ def create_venue_form():
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
     try:
-        # get form data and create
         form = VenueForm()
         venue = Venue(name=form.name.data, city=form.city.data, state=form.state.data, address=form.address.data,
                       phone=form.phone.data, image_link=form.image_link.data, genres=form.genres.data,
                       facebook_link=form.facebook_link.data, seeking_description=form.seeking_description.data,
                       website=form.website.data, seeking_talent=form.seeking_talent.data)
 
-        # commit session to database
         db.session.add(venue)
         db.session.commit()
 
-        # flash success
         flash('Venue ' + request.form['name'] + ' was successfully listed!')
     except():
-        # catches errors
         db.session.rollback()
         flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
     finally:
-        # closes session
         db.session.close()
     return render_template('pages/home.html')
 
@@ -184,7 +168,6 @@ def create_venue_submission():
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
     try:
-        # Get venue by ID
         venue = Venue.query.get(venue_id)
         venue_name = venue.name
 
@@ -221,7 +204,6 @@ def artists():
 def search_artists():
     search_term = request.form.get('search_term', '')
 
-    # filter artists by case insensitive search
     result = Artist.query.filter(Artist.name.ilike(f'%{search_term}%'))
 
     response = {
@@ -240,7 +222,6 @@ def show_artist(artist_id):
     upcoming_shows = []
     current_time = datetime.now()
 
-    # Filter shows by upcoming and past
     for show in shows:
         data = {
             "venue_id": show.venue_id,
@@ -414,7 +395,6 @@ def create_artist_submission():
 @app.route('/artist/<artist_id>', methods=['DELETE'])
 def delete_artist(artist_id):
     try:
-
         artist = Artist.query.get(artist_id)
         artist_name = artist.name
 
@@ -422,13 +402,13 @@ def delete_artist(artist_id):
         db.session.commit()
         flash('Artist ' + artist_name + ' was deleted')
     except():
-        flash('an error occured and Artist ' + artist_name + ' was not deleted')
+        flash('An error occured and Artist ' + artist_name + ' was not deleted')
         db.session.rollback()
     finally:
         db.session.close()
 
     return render_template('pages/home.html')
-
+#  ----------------------------------------------------------------
 #  Shows
 #  ----------------------------------------------------------------
 
@@ -454,7 +434,6 @@ def shows():
 
 @app.route('/shows/create')
 def create_shows():
-    # renders form
     form = ShowForm()
     return render_template('forms/new_show.html', form=form)
 
@@ -502,7 +481,6 @@ if not app.debug:
 # Launch.
 #----------------------------------------------------------------------------#
 
-# Default port:
 if __name__ == '__main__':
     app.run()
 
